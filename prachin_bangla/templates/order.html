@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ product.name }}</h2>
+                    {% if product.image %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="img-fluid rounded mb-3" alt="{{ product.name }}">
+                    {% endif %}
+                    <p class="card-text">{{ product.description }}</p>
+                    <div class="mb-3">
+                        <h4 class="mb-2">Features:</h4>
+                        <ul class="list-unstyled">
+                            {% for feature in product.features.split('\n') if feature %}
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="me-3">Price:</span>
+                        <h4 class="price mb-0" id="price" data-price="{{ product.price }}" data-discount="{{ product.discount }}">
+                            {% if product.discount > 0 %}
+                            <span class="text-decoration-line-through text-muted">৳{{ product.price }}</span>
+                            <span>৳{{ (product.price * (1 - product.discount/100))|round(2) }}</span>
+                            <small class="text-danger">({{ product.discount }}% off)</small>
+                            {% else %}
+                            <span>৳{{ product.price }}</span>
+                            {% endif %}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Order Details</h3>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Delivery Address *</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(-1)">-</button>
+                                <input type="number" class="form-control text-center" id="quantity" name="quantity" value="1" min="1" readonly>
+                                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(1)">+</button>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h5>Total: ৳<span id="total-price">{{ product.price }}</span></h5>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

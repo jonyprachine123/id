@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Add New Product</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                        <img id="image-preview" src="#" alt="Preview" class="mt-2" style="max-width: 200px; display: none;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="price" class="form-label">মূল্য (৳) *</label>
+                            <input type="text" 
+                                   class="form-control no-bengali-digits" 
+                                   id="price" 
+                                   name="price" 
+                                   value="0" 
+                                   inputmode="numeric"
+                                   style="font-family: 'Courier New', monospace !important;">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="discount" class="form-label">ডিসকাউন্ট (%)</label>
+                            <input type="text" 
+                                   class="form-control no-bengali-digits" 
+                                   id="discount" 
+                                   name="discount" 
+                                   value="0" 
+                                   inputmode="numeric"
+                                   style="font-family: 'Courier New', monospace !important;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="features" class="form-label">Product Features</label>
+                        <textarea class="form-control" id="features" name="features" rows="4" placeholder="Enter each feature on a new line"></textarea>
+                    </div>
+                    
+                    <div class="text-end">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    .no-bengali-digits {
+        font-family: 'Courier New', monospace !important;
+        font-variant-numeric: tabular-nums !important;
+        -webkit-font-feature-settings: "tnum" 1 !important;
+        font-feature-settings: "tnum" 1 !important;
+        -webkit-font-variant-numeric: tabular-nums !important;
+        -moz-font-feature-settings: "tnum" 1 !important;
+        unicode-bidi: isolate !important;
+    }
+
+    .no-bengali-digits::-webkit-input-placeholder,
+    .no-bengali-digits::placeholder,
+    .no-bengali-digits {
+        font-family: 'Courier New', monospace !important;
+    }
+</style>
+
+<script>
+    function forceEnglishDigits(input) {
+        // Convert Bengali digits to English
+        let value = input.value.replace(/[১২৩৪৫৬৭৮৯০]/g, function(d) {
+            return String.fromCharCode(d.charCodeAt(0) - 0x09E6 + 0x30);
+        });
+        // Remove any non-numeric characters except decimal point
+        value = value.replace(/[^0-9.]/g, '');
+        // Ensure only one decimal point
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        return value || '0';
+    }
+
+    // Add event listeners for price input
+    document.getElementById('price').addEventListener('input', function() {
+        this.value = forceEnglishDigits(this);
+    });
+
+    // Add event listeners for discount input
+    document.getElementById('discount').addEventListener('input', function() {
+        let value = forceEnglishDigits(this);
+        // Ensure discount is between 0 and 100
+        value = Math.min(100, Math.max(0, parseFloat(value) || 0));
+        this.value = value.toString();
+    });
+</script>

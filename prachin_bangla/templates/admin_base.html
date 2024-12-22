@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block site_header %}{% endblock %}
+{% block site_footer %}{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('admin_dashboard') }}">
+            <i class="fas fa-dharmachakra me-2"></i>
+            <span class="d-none d-sm-inline">অ্যাডমিন প্যানেল</span>
+            <span class="d-inline d-sm-none">অ্যাডমিন</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" 
+                       href="{{ url_for('admin_dashboard') }}">
+                       <i class="fas fa-tachometer-alt me-2"></i>
+                       <span>ড্যাশবোর্ড</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center {% if request.endpoint == 'admin_products' %}active{% endif %}" 
+                       href="{{ url_for('admin_products') }}">
+                       <i class="fas fa-box me-2"></i>
+                       <span>পণ্য</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center {% if request.endpoint == 'admin_orders' %}active{% endif %}" 
+                       href="{{ url_for('admin_orders') }}">
+                       <i class="fas fa-shopping-cart me-2"></i>
+                       <span>অর্ডার</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center {% if request.endpoint == 'admin_reviews' %}active{% endif %}" 
+                       href="{{ url_for('admin_reviews') }}">
+                       <i class="fas fa-star me-2"></i>
+                       <span>রিভিউ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center {% if request.endpoint == 'admin_banners' %}active{% endif %}" 
+                       href="{{ url_for('admin_banners') }}">
+                       <i class="fas fa-images me-2"></i>
+                       <span>ব্যানার</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" href="{{ url_for('admin_logout') }}">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        <span>লগ আউট</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container responsive-padding">
+    <div class="row">
+        <div class="col-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+.navbar {
+    background-color: #1a237e;
+}
+
+.navbar-brand {
+    font-weight: 500;
+    color: #fff !important;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff !important;
+}
+
+.alert {
+    margin-top: 1rem;
+}
+</style>

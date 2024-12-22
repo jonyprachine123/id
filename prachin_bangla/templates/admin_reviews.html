@@ -1,0 +1,196 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">রিভিউ ব্যবস্থাপনা</h2>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">নতুন রিভিউ যোগ করুন</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('add_review') }}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_name" class="form-label">গ্রাহকের নাম</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="rating" class="form-label">রেটিং</label>
+                            <div class="rating-input">
+                                {% for i in range(5, 0, -1) %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                                <label for="star{{ i }}"><i class="far fa-star"></i></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">মন্তব্য</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> রিভিউ যোগ করুন
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>গ্রাহকের নাম</th>
+                                <th>রেটিং</th>
+                                <th>মন্তব্য</th>
+                                <th>তারিখ</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in reviews %}
+                            <tr>
+                                <td>{{ review.customer_name }}</td>
+                                <td>
+                                    {% for _ in range(review.rating) %}
+                                    <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ review.comment }}</td>
+                                <td>{{ review.date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <form action="{{ url_for('delete_review', id=review.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('আপনি কি নিশ্চিত যে আপনি এই রিভিউটি মুছে ফেলতে চান?')">
+                                            <i class="fas fa-trash-alt"></i> মুছে ফেলুন
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+    padding: 1rem;
+}
+
+.fa-star {
+    font-size: 0.9rem;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #ff4d5a);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    background: linear-gradient(45deg, #ff4d5a, #dc3545);
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.5rem;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ffc107;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: #ffc107;
+}
+
+.rating-input label:hover i,
+.rating-input label:hover ~ label i,
+.rating-input input:checked ~ label i {
+    content: "\f005";
+    font-weight: 900;
+}
+
+.card-header {
+    background: linear-gradient(45deg, #f8f9fa, #ffffff);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+    border-color: #1a237e;
+    box-shadow: 0 0 0 0.2rem rgba(26,35,126,0.25);
+}
+</style>
+
+<script>
+document.querySelectorAll('.rating-input label').forEach(label => {
+    label.addEventListener('mouseover', function() {
+        this.querySelector('i').classList.remove('far');
+        this.querySelector('i').classList.add('fas');
+        let prev = this.previousElementSibling;
+        while(prev) {
+            prev.nextElementSibling.querySelector('i').classList.remove('far');
+            prev.nextElementSibling.querySelector('i').classList.add('fas');
+            prev = prev.previousElementSibling;
+        }
+    });
+
+    label.addEventListener('mouseout', function() {
+        if (!this.previousElementSibling?.checked) {
+            this.querySelector('i').classList.remove('fas');
+            this.querySelector('i').classList.add('far');
+            let prev = this.previousElementSibling;
+            while(prev) {
+                if (!prev.checked) {
+                    prev.nextElementSibling.querySelector('i').classList.remove('fas');
+                    prev.nextElementSibling.querySelector('i').classList.add('far');
+                }
+                prev = prev.previousElementSibling;
+            }
+        }
+    });
+});
+
+document.querySelectorAll('.rating-input input').forEach(input => {
+    input.addEventListener('change', function() {
+        document.querySelectorAll('.rating-input i').forEach(icon => {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        });
+        let current = this;
+        while(current) {
+            current.nextElementSibling.querySelector('i').classList.remove('far');
+            current.nextElementSibling.querySelector('i').classList.add('fas');
+            current = current.nextElementSibling?.nextElementSibling;
+        }
+    });
+});
+</script>
+{% endblock %}

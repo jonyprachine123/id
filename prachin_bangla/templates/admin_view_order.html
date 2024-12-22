@@ -1,0 +1,165 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="container my-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">অর্ডার #{{ order.id }} এর বিস্তারিত</h4>
+            <div>
+                <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> ফিরে যান
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">গ্রাহকের তথ্য</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th style="width: 150px;">নাম</th>
+                                    <td>{{ order.customer_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>মোবাইল নম্বর</th>
+                                    <td>{{ order.customer_phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ইমেইল</th>
+                                    <td>{{ order.customer_email or '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ঠিকানা</th>
+                                    <td>{{ order.customer_address }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">অর্ডারের তথ্য</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th style="width: 150px;">অর্ডার আইডি</th>
+                                    <td>#{{ order.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>তারিখ</th>
+                                    <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>মোট মূল্য</th>
+                                    <td>৳{{ "%.2f"|format(order.total_amount) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>পেমেন্ট মেথড</th>
+                                    <td>{{ order.payment_method }}</td>
+                                </tr>
+                                <tr>
+                                    <th>স্ট্যাটাস</th>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('admin_update_order_status', id=order.id) }}" class="d-flex align-items-center gap-2">
+                                            <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
+                                                <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">আপডেট</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if order.items %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">অর্ডার আইটেম</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>পণ্য</th>
+                                    <th>পরিমাণ</th>
+                                    <th>দাম</th>
+                                    <th class="text-end">মোট</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>৳{{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-end">৳{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>মোট:</strong></td>
+                                    <td class="text-end"><strong>৳{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.card-title {
+    color: #1a237e;
+    font-weight: 600;
+}
+
+.table th {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.table-borderless td, .table-borderless th {
+    padding: 0.5rem 0;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.form-select-sm {
+    min-width: 120px;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}

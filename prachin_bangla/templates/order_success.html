@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="success-card text-center">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="mb-2">অর্ডার সফল হয়েছে!</h3>
+                <p class="mb-3">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।</p>
+                
+                <div class="order-info mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <p class="mb-2">যে কোন প্রয়োজনে কল করুন: <strong>+880 1234-567890</strong></p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <p class="mb-0">ইমেইল করুন: <strong>support@prachinbangla.com</strong></p>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-1"></i>
+                    হোম পেজে ফিরে যান
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if banners %}
+    <div class="section-title text-center mt-4 mb-3">
+        <h4>আপনার জন্য আরও কিছু প্রোডাক্ট</h4>
+        <p class="text-muted small">আমাদের বিশেষ অফার গুলো দেখুন</p>
+    </div>
+    
+    <div class="row">
+        {% for banner in banners %}
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 banner-card">
+                <div class="banner-image-container">
+                    <img src="{{ url_for('static', filename='uploads/banners/' + banner.image) }}" class="card-img-top banner-img" alt="{{ banner.title }}">
+                </div>
+                <div class="card-body p-3">
+                    <h5 class="card-title small mb-2">{{ banner.title }}</h5>
+                    <p class="card-text small mb-2">{{ banner.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="price-section">
+                            {% if banner.discount > 0 %}
+                                {% set discounted_price = banner.price - (banner.price * banner.discount / 100) %}
+                                <p class="mb-0 small">
+                                    <span class="text-decoration-line-through text-muted">৳{{ "%.2f"|format(banner.price) }}</span>
+                                    <span class="ms-1 fw-bold text-success">৳{{ "%.2f"|format(discounted_price) }}</span>
+                                    <span class="badge bg-danger ms-1">{{ banner.discount }}% ছাড়</span>
+                                </p>
+                            {% else %}
+                                <p class="mb-0 small fw-bold">মূল্য: ৳{{ "%.2f"|format(banner.price) }}</p>
+                            {% endif %}
+                        </div>
+                        {% if banner.link %}
+                        <a href="{{ banner.link }}" class="btn btn-outline-primary btn-sm">আরও দেখুন</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.success-card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.success-icon {
+    font-size: 3.5rem;
+    color: #28a745;
+    animation: scaleIn 0.5s ease-out;
+}
+
+.order-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.info-item i {
+    color: #28a745;
+    font-size: 1rem;
+}
+
+.info-item p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.banner-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.banner-image-container {
+    width: 100%;
+    height: 180px;
+    padding: 10px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-img {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.section-title h4 {
+    margin-bottom: 0.25rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="container my-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">অর্ডার তালিকা</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>অর্ডার আইডি</th>
+                            <th>গ্রাহকের নাম</th>
+                            <th>ফোন</th>
+                            <th>ইমেইল</th>
+                            <th>ঠিকানা</th>
+                            <th>মোট মূল্য</th>
+                            <th>পেমেন্ট মেথড</th>
+                            <th>স্ট্যাটাস</th>
+                            <th>তারিখ</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.customer_name }}</td>
+                            <td>{{ order.customer_phone }}</td>
+                            <td>{{ order.customer_email or '-' }}</td>
+                            <td>{{ order.customer_address }}</td>
+                            <td>৳{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td>{{ order.payment_method }}</td>
+                            <td>
+                                <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('admin_view_order', id=order.id) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin_delete_order', id=order.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('আপনি কি নিশ্চিত?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-group .btn i {
+    font-size: 0.875rem;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #31d2f2;
+    border-color: #25cff2;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+</style>
+{% endblock %}

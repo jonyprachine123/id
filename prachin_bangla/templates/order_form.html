@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ product.name }} - অর্ডার করুন</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Product Details -->
+                    <div class="product-details mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-8">
+                                <h5>{{ product.name }}</h5>
+                                <p>{{ product.description }}</p>
+                                {% if product.features %}
+                                <div class="features mb-3">
+                                    <strong>বৈশিষ্ট্য:</strong>
+                                    <ul class="list-unstyled">
+                                        {% for feature in product.features.split('\n') %}
+                                        {% if feature.strip() %}
+                                        <li><i class="fas fa-check text-success"></i> {{ feature.strip() }}</li>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                                <div class="price-section mb-3">
+                                    <h4 class="price mb-0">
+                                        {% if product.discount %}
+                                        <span class="original-price text-muted text-decoration-line-through">৳{{ "%.2f"|format(product.price) }}</span>
+                                        <span class="discounted-price">৳{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                                        <span class="discount-badge">{{ product.discount }}% ছাড়</span>
+                                        {% else %}
+                                        <span>৳{{ "%.2f"|format(product.price) }}</span>
+                                        {% endif %}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Form -->
+                    <form method="POST" action="{{ url_for('order', product_id=product.id) }}">
+                        <div class="mb-3">
+                            <label for="customer_name" class="form-label">নাম</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">মোবাইল নম্বর <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="উদাহরণ: 017XXXXXXX"></i></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="01[3-9][0-9]{8}" minlength="11" maxlength="11" placeholder="Enter your mobile number" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">ইমেইল (ঐচ্ছিক)</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">ঠিকানা</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">পেমেন্ট মেথড</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="">পেমেন্ট মেথড নির্বাচন করুন</option>
+                                <option value="cash">ক্যাশ অন ডেলিভারি</option>
+                                <option value="bkash">বিকাশ</option>
+                                <option value="nagad">নগদ</option>
+                                <option value="rocket">রকেট</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                অর্ডার কনফার্ম করুন
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #1a237e, #3949ab);
+    border: none;
+}
+
+.product-details {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.price-section {
+    margin-top: 1rem;
+}
+
+.original-price {
+    font-size: 1rem;
+}
+
+.discounted-price {
+    font-size: 1.5rem;
+    color: #1a237e;
+    margin-left: 0.5rem;
+}
+
+.discount-badge {
+    background: #1a237e;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
+}
+
+.features li {
+    padding: 0.25rem 0;
+}
+
+.features i {
+    margin-right: 0.5rem;
+}
+</style>
+{% endblock %}

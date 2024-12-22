@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+
+{% block title %}প্রাচীন বাংলা - হোম{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-image-container {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 30px;
+        transition: transform 0.3s ease;
+    }
+
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+
+    .product-card .col-md-5 {
+        flex: 0 0 45%;
+        max-width: 45%;
+    }
+
+    .product-card .col-md-7 {
+        flex: 0 0 55%;
+        max-width: 55%;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #dc3545;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .product-info {
+        padding: 30px;
+    }
+
+    .product-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .product-description {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .features-list {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .features-list li {
+        padding: 8px 0;
+        padding-left: 30px;
+        position: relative;
+        color: #555;
+    }
+
+    .features-list li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 1.2rem;
+    }
+
+    .discounted-price {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .order-form {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .order-form h4 {
+        color: #2c3e50;
+        font-weight: 600;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #444;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-order {
+        background: #28a745;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-order:hover {
+        background: #218838;
+        transform: translateY(-2px);
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .quantity-btn {
+        background: #e9ecef;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .quantity-btn:hover {
+        background: #dde0e3;
+    }
+
+    .total-price-display {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+    }
+
+    .total-price-display .h4 {
+        color: #28a745;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+        font-family: Arial, sans-serif !important;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .english-digits {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        -webkit-font-feature-settings: "tnum";
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+    }
+
+    input[type="number"].english-digits {
+        -moz-appearance: textfield;
+        direction: ltr;
+    }
+
+    input[type="number"].english-digits::-webkit-outer-spin-button,
+    input[type="number"].english-digits::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Customer Review Styles */
+    .customer-reviews {
+        background-color: #f8f9fa;
+    }
+    
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        height: 100%;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .star-rating {
+        color: #ffc107;
+        font-size: 1.1rem;
+    }
+    
+    .review-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .review-date {
+        font-size: 0.9rem;
+        color: #888;
+    }
+    
+    .review-header h5 {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .no-bengali-digits {
+        font-family: 'Courier New', monospace !important;
+        font-variant-numeric: tabular-nums !important;
+        -webkit-font-feature-settings: "tnum" 1 !important;
+        font-feature-settings: "tnum" 1 !important;
+        -webkit-font-variant-numeric: tabular-nums !important;
+        -moz-font-feature-settings: "tnum" 1 !important;
+        unicode-bidi: isolate !important;
+    }
+
+    /* Override any system font settings */
+    .no-bengali-digits::-webkit-input-placeholder,
+    .no-bengali-digits::placeholder,
+    .no-bengali-digits {
+        font-family: 'Courier New', monospace !important;
+    }
+
+    .quantity-control input {
+        text-align: center !important;
+        padding: 0.375rem !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% for product in products %}
+    <div class="product-card">
+        <div class="row g-0">
+            <div class="col-md-5">
+                <div class="product-image-container">
+                    {% if product.discount > 0 %}
+                    <div class="discount-badge">{{ product.discount }}% ছাড়</div>
+                    {% endif %}
+                    {% if product.image %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+                         alt="{{ product.name }}"
+                         class="product-image">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="product-info">
+                    <h2 class="product-title">{{ product.name }}</h2>
+                    <p class="product-description">{{ product.description }}</p>
+                    
+                    {% if product.features %}
+                    <ul class="features-list">
+                        {% for feature in product.features.split('\n') %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div class="price-container">
+                        {% if product.discount > 0 %}
+                        <span class="original-price">৳{{ "%.2f"|format(product.price) }}</span>
+                        <span class="discounted-price">৳{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                        {% else %}
+                        <span class="discounted-price">৳{{ "%.2f"|format(product.price) }}</span>
+                        {% endif %}
+                    </div>
+
+                    <form method="POST" action="{{ url_for('place_order', product_id=product.id) }}" 
+                          class="order-form" onsubmit="return validateForm(this);">
+                        <h4 class="mb-4 text-center">আপনার অর্ডার দিন</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_name_{{ product.id }}" class="form-label">নাম <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="আপনার পূর্ণ নাম লিখুন"></i></label>
+                                <input type="text" class="form-control" id="customer_name_{{ product.id }}" 
+                                       name="customer_name" required
+                                       placeholder="Enter your name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_phone_{{ product.id }}" class="form-label">মোবাইল নম্বর <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="উদাহরণ: 017XXXXXXX"></i></label>
+                                <input type="tel" class="form-control" id="customer_phone_{{ product.id }}" 
+                                       name="customer_phone" required 
+                                       pattern="01[3-9][0-9]{8}" minlength="11" maxlength="11"
+                                       placeholder="Enter your mobile number">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="customer_email_{{ product.id }}" class="form-label">ইমেইল (ঐচ্ছিক) <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="আপনার ইমেইল ঠিকানা (যদি থাকে)"></i></label>
+                                <input type="email" class="form-control" id="customer_email_{{ product.id }}" 
+                                       name="customer_email"
+                                       placeholder="Enter your email (optional)">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer_address_{{ product.id }}" class="form-label">ঠিকানা <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="ডেলিভারির জন্য সম্পূর্ণ ঠিকানা দিন"></i></label>
+                            <textarea class="form-control" id="customer_address_{{ product.id }}" 
+                                    name="customer_address" rows="2" required
+                                    placeholder="Enter your delivery address"></textarea>
+                        </div>
+                        <div class="row align-items-end">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">পরিমাণ <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="কতটি পণ্য কিনতে চান"></i></label>
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-btn" data-action="decrease">-</button>
+                                    <input type="text" 
+                                           class="form-control text-center no-bengali-digits" 
+                                           id="quantity_{{ product.id }}" 
+                                           name="quantity" 
+                                           value="1" 
+                                           style="width: 80px; font-family: 'Courier New', monospace !important;"
+                                           inputmode="numeric">
+                                    <button type="button" class="quantity-btn" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">মোট মূল্য</label>
+                                <div class="total-price-display" id="total_price_{{ product.id }}">
+                                    {% if product.discount > 0 %}
+                                    {% set price = product.price * (1 - product.discount/100) %}
+                                    {% else %}
+                                    {% set price = product.price %}
+                                    {% endif %}
+                                    <span class="h4 mb-0">৳<span id="total_amount_{{ product.id }}">{{ "%.2f"|format(price) }}</span></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button type="submit" class="btn btn-order btn-lg w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i>অর্ডার করুন
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const productId = '{{ product.id }}';
+        const basePrice = {% if product.discount > 0 %}
+            {{ product.price * (1 - product.discount/100) }}
+        {% else %}
+            {{ product.price }}
+        {% endif %};
+
+        const quantityInput = document.getElementById('quantity_' + productId);
+        
+        // Force initial value
+        quantityInput.value = '1';
+
+        function forceEnglishDigits(value) {
+            // Convert Bengali digits to English
+            return value.replace(/[১২৩৪৫৬৭৮৯০]/g, function(d) {
+                return String.fromCharCode(d.charCodeAt(0) - 0x09E6 + 0x30);
+            });
+        }
+
+        function updateQuantity(change) {
+            let value = parseInt(forceEnglishDigits(quantityInput.value)) + change;
+            if (isNaN(value) || value < 1) value = 1;
+            quantityInput.value = value.toString();
+            updateTotal();
+        }
+
+        // Handle direct input
+        quantityInput.addEventListener('input', function(e) {
+            let value = forceEnglishDigits(this.value.replace(/[^0-9১২৩৪৫৬৭৮৯০]/g, ''));
+            if (!value) value = '1';
+            this.value = value;
+            updateTotal();
+        });
+
+        function updateTotal() {
+            const quantity = parseInt(forceEnglishDigits(quantityInput.value)) || 1;
+            const total = (quantity * basePrice).toFixed(2);
+            document.getElementById('total_amount_' + productId).textContent = total;
+        }
+
+        // Attach button handlers
+        document.querySelectorAll('[data-action="decrease"], [data-action="increase"]').forEach(button => {
+            const change = button.dataset.action === 'decrease' ? -1 : 1;
+            button.onclick = () => updateQuantity(change);
+        });
+    })();
+    </script>
+    {% endfor %}
+</div>
+
+<!-- Customer Reviews Section -->
+<div class="customer-reviews py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">গ্রাহক প্রতিক্রিয়া</h2>
+        <div class="row">
+            {% for review in reviews %}
+            <div class="col-md-4 mb-4">
+                <div class="review-card">
+                    <div class="review-header mb-3">
+                        <h5 class="mb-2">{{ review.customer_name }}</h5>
+                        <div class="star-rating">
+                            {% for _ in range(review.rating) %}
+                            <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for _ in range(5 - review.rating) %}
+                            <i class="far fa-star"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="review-text mb-3">{{ review.comment }}</p>
+                    <p class="review-date text-muted">{{ review.date.strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function validateForm(form) {
+    const name = form.customer_name.value.trim();
+    const phone = form.customer_phone.value.trim();
+    const address = form.customer_address.value.trim();
+    
+    if (name.length < 3) {
+        alert('দয়া করে সঠিক নাম লিখুন');
+        return false;
+    }
+    
+    if (!phone.match(/^01[3-9]\d{8}$/)) {
+        alert('দয়া করে সঠিক মোবাইল নম্বর লিখুন');
+        return false;
+    }
+    
+    if (address.length < 10) {
+        alert('দয়া করে বিস্তারিত ঠিকানা লিখুন');
+        return false;
+    }
+    
+    return true;
+}
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

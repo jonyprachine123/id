@@ -1,0 +1,154 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">ব্যানার ব্যবস্থাপনা</h2>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">নতুন ব্যানার যোগ করুন</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('add_banner') }}" method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="title" class="form-label">শিরোনাম</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="image" class="form-label">ছবি</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required onchange="previewImage(this)">
+                            <img id="imagePreview" class="preview-image" alt="Preview">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">বিবরণ</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="link" class="form-label">লিংক (ঐচ্ছিক)</label>
+                            <input type="url" class="form-control" id="link" name="link">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="price" class="form-label">মূল্য</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="discount" class="form-label">ছাড় (%)</label>
+                            <input type="number" class="form-control" id="discount" name="discount" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
+                </form>
+            </div>
+        </div>
+
+        <h3 class="mb-3">বর্তমান ব্যানার</h3>
+        {% for banner in banners %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="banner-list-item">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='uploads/banners/' + banner.image) }}" class="banner-image" alt="{{ banner.title }}">
+                        <div class="banner-content flex-grow-1">
+                            <div class="row align-items-center">
+                                <div class="col-md-7">
+                                    <h5>{{ banner.title }}</h5>
+                                    <p class="mb-1">{{ banner.description }}</p>
+                                    {% if banner.link %}
+                                    <small class="text-muted">লিংক: <a href="{{ banner.link }}" target="_blank">লিংক দেখুন</a></small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0">মূল্য: ৳{{ banner.price }}</p>
+                                    {% if banner.discount > 0 %}
+                                    <small class="text-danger">({{ banner.discount }}% ছাড়)</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <a href="{{ url_for('toggle_banner', id=banner.id) }}" class="btn btn-info btn-sm mb-2">
+                                        <i class="fas fa-eye{{ '-slash' if banner.is_active else '' }}"></i> বিস্তারিত
+                                    </a>
+                                    <form action="{{ url_for('delete_banner', id=banner.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('আপনি কি নিশ্চিত যে আপনি এই ব্যানারটি মুছে ফেলতে চান?')">
+                                            <i class="fas fa-trash-alt"></i> মুছুন
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.banner-list-item {
+    width: 100%;
+}
+
+.banner-image {
+    width: 150px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1.5rem;
+}
+
+.banner-content {
+    width: 100%;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    margin: 0 0.25rem;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+</style>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}
